@@ -1,0 +1,18 @@
+line-length = 100
+
+include = ["tests.py", "conda"]
+
+[lint]
+select = ["ALL"]
+ignore = [
+    "D",
+    "ANN",
+    "S603",
+    "COM812",
+    "ISC001",
+    "T201",
+    "S607",
+    "TRY003",
+    "S101",
+    "S606"
+]
