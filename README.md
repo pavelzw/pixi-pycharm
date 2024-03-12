@@ -4,10 +4,8 @@ Add Pixi support to PyCharm.
 
 ## How to use
 
-1. Clone this repo.
-2. Use `./conda self-check` to see if pixi is properly installed.
-3. Move `conda` file from this repo to `/path/to/project/.pixi/envs/<env>/libexec/conda` (the path must match exactly) (a symlink is sufficient as well).
-4. Configure PyCharm: In the *Add Python Interpreter* dialog, select *Conda Environment* and set *Conda executable* to the full path of the `conda` file of the cloned repo.
+1. Run `pixi add pixi-pycharm` in your project.
+2. Configure PyCharm: In the *Add Python Interpreter* dialog, select *Conda Environment* and set *Conda executable* to the full path of the `conda` file: `/path-to-project/.pixi/envs/default/libexec/conda`.
 
 ## Debugging
 
