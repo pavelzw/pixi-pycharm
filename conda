@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 
+import contextlib
 import json
 import locale
 import os
@@ -18,7 +19,7 @@ MANIFEST_PATH = PROJECT_ROOT / "pixi.toml"
 
 
 def pixi(cmd):
-    out = subprocess.check_output(["pixi"] + cmd)
+    out = subprocess.check_output(["pixi", *cmd])
     return out.decode(locale.getpreferredencoding())
 
 
@@ -27,14 +28,13 @@ def manifest():
 
 
 def pixi_json(cmd):
-    return json.loads(pixi(cmd + ["--json"]))
+    return json.loads(pixi([*cmd, "--json"]))
 
 
 def pixi_envs():
     platform = pixi_json(["info", *manifest()])["platform"]
     envs = pixi_json(["info", *manifest()])["environments_info"]
-    envs = [env["prefix"] for env in envs if platform in env["platforms"]]
-    return envs
+    return [env["prefix"] for env in envs if platform in env["platforms"]]
 
 
 def print_json(data):
@@ -58,9 +58,11 @@ def main(args):
             return 1
         pixi(["info", *manifest()])
         if not str(PIXI_ROOT).endswith(".pixi"):
-            raise AssertionError(
-                f"PIXI_ROOT={PIXI_ROOT!s} does not end with '.pixi'. Is the file in the correct location?"
+            msg = (
+                f"PIXI_ROOT={PIXI_ROOT!s} does not end with '.pixi'."
+                "Is it in the correct location?"
             )
+            raise AssertionError(msg)
         print("Self-check successful.", file=sys.stderr)
     elif args == ["info", "--envs", "--json"]:
         print_json(
@@ -74,11 +76,9 @@ def main(args):
         assert args[1] == "-p"
         prefix = args[2]
         env = prefix_to_env(prefix)
-        assert len(args) == 3
+        assert len(args) == 3  # noqa: PLR2004
         out = pixi_json(["list", *manifest(), *pixi_env_cli_params(env)])
-        lines = (
-            "{name} {version} {build}".format(**pkg) for pkg in out
-        )
+        lines = ("{name} {version} {build}".format(**pkg) for pkg in out)
         print("\n".join(lines))
     elif args[0] == "run":
         assert args[1] == "-p"
@@ -103,17 +103,17 @@ if __name__ == "__main__":
     args = sys.argv[1:]
 
     if ENABLE_LOGGING:
-        cache_home = os.path.expanduser(os.getenv("XDG_CACHE_HOME") or "~/.cache")
-        try:
-            os.makedirs(cache_home)
-        except OSError:
-            pass
-        logfile = os.path.join(cache_home, "pixi-pycharm.log")
-        open(logfile, "a").write("Attempting to run: " + str(args) + "\n")
+        cache_home = Path(os.getenv("XDG_CACHE_HOME") or "~/.cache").expanduser()
+        with contextlib.suppress(OSError):
+            Path.mkdir(cache_home, parents=True)
+        logfile = cache_home / "pixi-pycharm.log"
+        with Path.open(logfile, "a") as f:
+            f.write("Attempting to run: " + str(args) + "\n")
 
     try:
         sys.exit(main(args))
     except Exception:
         if ENABLE_LOGGING:
-            open(logfile, "a").write(traceback.format_exc())
+            with Path.open(logfile, "a") as f:
+                f.write(traceback.format_exc())
         raise

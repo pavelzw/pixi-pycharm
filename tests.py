@@ -36,10 +36,11 @@ def test_info_envs_json():
     data = json.loads(result)
     assert isinstance(data, dict)
     assert set(data.keys()) == {"envs_dirs", "conda_prefix", "envs"}
-    assert data["envs_dirs"] == [f"{os.getcwd()}/.pixi"]
-    assert data["conda_prefix"] == f"{os.getcwd()}/.pixi"
+    assert data["envs_dirs"] == [str(Path.cwd() / ".pixi")]
+    assert data["conda_prefix"] == str(Path.cwd() / ".pixi")
     assert data["envs"] == [
-        f"{os.getcwd()}/.pixi/envs/{env}" for env in ["default", "py39", "py310", "py311", "py312"]
+        str(Path.cwd() / ".pixi" / "envs" / env)
+        for env in ["default", "py39", "py310", "py311", "py312"]
     ]
 
 
@@ -55,7 +56,7 @@ def test_list_old():
 
 @pytest.mark.parametrize("env", ["default", "py39", "py310", "py311", "py312"])
 def test_list(env: str):
-    result = run_conda(["list", "-p", f"{os.getcwd()}/.pixi/envs/{env}"])
+    result = run_conda(["list", "-p", str(Path.cwd() / ".pixi" / "envs" / env)])
     assert isinstance(result, str)
 
 
@@ -66,7 +67,7 @@ def test_run(env: str):
             [
                 "run",
                 "-p",
-                f"{os.getcwd()}/.pixi/envs/{env}",
+                str(Path.cwd() / ".pixi" / "envs" / env),
                 "--no-capture-output",
                 "echo",
                 "42",

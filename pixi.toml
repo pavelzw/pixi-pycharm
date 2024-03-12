@@ -9,9 +9,14 @@ platforms = ["osx-arm64", "linux-64", "linux-aarch64", "osx-64"]
 [tasks]
 copy-file = "mkdir -p .pixi/envs/$PIXI_ENVIRONMENT_NAME/libexec && rm -f .pixi/envs/$PIXI_ENVIRONMENT_NAME/libexec/conda && ln -s ../../../../conda .pixi/envs/$PIXI_ENVIRONMENT_NAME/libexec/conda"
 test = "pytest tests.py"
+lint = "ruff check --fix"
+lint-check = "ruff check"
+fmt = "ruff format"
+fmt-check = "ruff format --check"
 
 [dependencies]
 pytest = "*"
+ruff = ">=0.3.2,<0.4"
 
 [feature.py39.dependencies]
 python = "3.9.*"
