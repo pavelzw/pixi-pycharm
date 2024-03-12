@@ -12,7 +12,8 @@ from pathlib import Path
 
 ENABLE_LOGGING = True
 
-PIXI_ROOT = Path(__file__).parent
+# assuming file is in .pixi/envs/<env>/libexec/conda
+PIXI_ROOT = Path(__file__).parent.parent.parent.parent
 PROJECT_ROOT = PIXI_ROOT.parent
 MANIFEST_PATH = PROJECT_ROOT / "pixi.toml"
 
@@ -59,7 +60,7 @@ def main(args):
         pixi(["info", *manifest()])
         if not str(PIXI_ROOT).endswith(".pixi"):
             raise AssertionError(
-                f"{PIXI_ROOT=} does not end with '.pixi'. Is the file in the correct location?"
+                f"PIXI_ROOT={str(PIXI_ROOT)} does not end with '.pixi'. Is the file in the correct location?"
             )
         print("Self-check successful.", file=sys.stderr)
     elif args == ["info", "--envs", "--json"]:
