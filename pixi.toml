@@ -1,0 +1,29 @@
+[project]
+name = "pixi-pycharm"
+version = "0.1.0"
+description = "Conda shim for PyCharm that proxies pixi"
+authors = ["Pavel Zwerschke <pavelzw@gmail.com>"]
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "linux-64", "linux-aarch64", "osx-64"]
+
+[tasks]
+copy-file = "rm -f .pixi/conda && ln -s ../conda .pixi/conda"
+test = "pytest tests.py"
+
+[dependencies]
+pytest = "*"
+
+[feature.py39.dependencies]
+python = "3.9.*"
+[feature.py310.dependencies]
+python = "3.10.*"
+[feature.py311.dependencies]
+python = "3.11.*"
+[feature.py312.dependencies]
+python = "3.12.*"
+
+[environments]
+py39 = ["py39"]
+py310 = ["py310"]
+py311 = ["py311"]
+py312 = ["py312"]

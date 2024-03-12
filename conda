@@ -5,83 +5,93 @@ from __future__ import print_function
 import json
 import locale
 import os
-import re
 import subprocess
 import sys
-import tempfile
 import traceback
+from pathlib import Path
 
 ENABLE_LOGGING = True
 
-
-PASSTHROUGH_PREFIXES = [
-    ["run"],
-    ["create"],
-    ["install"],
-]
+PIXI_ROOT = Path(__file__).parent
+PROJECT_ROOT = PIXI_ROOT.parent
+MANIFEST_PATH = PROJECT_ROOT / "pixi.toml"
 
 
-def micromamba(cmd):
-    out = subprocess.check_output(["micromamba"] + cmd)
+def pixi(cmd):
+    out = subprocess.check_output(["pixi"] + cmd)
     return out.decode(locale.getpreferredencoding())
 
 
-def micromamba_json(cmd):
-    return json.loads(micromamba(cmd + ["--json"]))
+def manifest():
+    return ["--manifest-path", str(MANIFEST_PATH)]
 
 
-def sort_envs(envs):
-    special_name = re.compile(r"(\.cache|conda-bld)[/\\]")
-    special_envs = [e for e in envs if special_name.search(e)]
-    non_special_envs = [e for e in envs if not special_name.search(e)]
-    return sorted(non_special_envs) + sorted(special_envs)
+def pixi_json(cmd):
+    return json.loads(pixi(cmd + ["--json"]))
+
+
+def pixi_envs():
+    platform = pixi_json(["info", *manifest()])["platform"]
+    envs = pixi_json(["info", *manifest()])["environments_info"]
+    envs = [env["prefix"] for env in envs if platform in env["platforms"]]
+    return envs
 
 
 def print_json(data):
     print(json.dumps(data, indent=4))
 
 
+def prefix_to_env(prefix):
+    return prefix.split("/")[-1]
+
+
+def pixi_env_cli_params(env):
+    return ["-e", env] if env != "default" else []
+
+
 def main(args):
     if args == ["self-check"]:
         try:
-            micromamba(["--version"])
+            pixi(["--version"])
         except (FileNotFoundError, subprocess.CalledProcessError):
-            print("'micromamba' not found, is it on the $PATH?", file=sys.stderr)
+            print("'pixi' not found, is it on the $PATH?", file=sys.stderr)
             return 1
-        micromamba(["info"])
+        pixi(["info", *manifest()])
+        if not str(PIXI_ROOT).endswith(".pixi"):
+            raise AssertionError(
+                f"{PIXI_ROOT=} does not end with '.pixi'. Is the file in the correct location?"
+            )
         print("Self-check successful.", file=sys.stderr)
     elif args == ["info", "--envs", "--json"]:
-        base_env = micromamba_json(["info"])["base environment"]
         print_json(
             {
-                "envs_dirs": [base_env],
-                "conda_prefix": base_env,
-                "envs": sort_envs(micromamba_json(["env", "list"])["envs"]),
+                "envs_dirs": [str(PIXI_ROOT)],
+                "conda_prefix": str(PIXI_ROOT),
+                "envs": pixi_envs(),
             },
         )
-    elif args == ["env", "list", "--json"]:
-        print_json({"envs": sort_envs(micromamba_json(["env", "list"])["envs"])})
     elif args[0] == "list":
-        if args[-1] == "-e":
-            out = micromamba_json(args[:-1])
-            print(
-                "\n".join(
-                    "{name}={version}={build_string}".format(**pkg) for pkg in out
-                )
-            )
-        else:
-            out = micromamba(args)
-            lines = (
-                line.strip()
-                for line in out.splitlines()
-                if line.startswith(" ") and not line.startswith("  Name")
-            )
-            print("\n".join(lines))
-    elif any(args[: len(prefix)] == prefix for prefix in PASSTHROUGH_PREFIXES):
+        assert args[1] == "-p"
+        prefix = args[2]
+        env = prefix_to_env(prefix)
+        assert len(args) == 3
+        out = pixi_json(["list", *manifest(), *pixi_env_cli_params(env)])
+        lines = (
+            "{name} {version} {build}".format(**pkg) for pkg in out
+        )
+        print("\n".join(lines))
+    elif args[0] == "run":
+        assert args[1] == "-p"
+        prefix = args[2]
+        env = prefix_to_env(prefix)
+        pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
         os.execlp(
-            "micromamba",
-            "micromamba",
-            *(arg for arg in args if arg != "--no-capture-output")
+            "pixi",
+            "pixi",
+            "run",
+            *manifest(),
+            *pixi_env_cli_params(env),
+            *pixi_run_args,
         )
     else:
         raise NotImplementedError(str(args))
@@ -98,7 +108,7 @@ if __name__ == "__main__":
             os.makedirs(cache_home)
         except OSError:
             pass
-        logfile = os.path.join(cache_home, "micromamba-pycharm.log")
+        logfile = os.path.join(cache_home, "pixi-pycharm.log")
         open(logfile, "a").write("Attempting to run: " + str(args) + "\n")
 
     try:

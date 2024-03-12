@@ -6,23 +6,16 @@ import sys
 
 import pytest
 
-try:
-    unicode  # noqa
-except NameError:
-    unicode = str
-
 
 def run_conda(args):
     return (
-        subprocess.check_output([sys.executable, "conda"] + args)
+        subprocess.check_output([sys.executable, f"{os.getcwd()}/.pixi/conda"] + args)
         .decode(locale.getpreferredencoding())
         .rstrip()
     )
 
 
-@pytest.fixture(autouse=True)
-def setup_PATH(monkeypatch):
-    monkeypatch.setenv("PATH", os.getcwd() + ":" + os.environ["PATH"])
+def test_self_check():
     run_conda(["self-check"])
 
 
@@ -31,23 +24,13 @@ def test_info_envs_json():
     data = json.loads(result)
     assert isinstance(data, dict)
     assert set(data.keys()) == {"envs_dirs", "conda_prefix", "envs"}
-    assert isinstance(data["envs_dirs"], list)
-    assert all(isinstance(item, unicode) for item in data["envs_dirs"])
-    assert isinstance(data["conda_prefix"], unicode)
-    assert isinstance(data["envs"], list)
-    assert all(isinstance(item, unicode) for item in data["envs"])
+    assert data["envs_dirs"] == [f"{os.getcwd()}/.pixi"]
+    assert data["conda_prefix"] == f"{os.getcwd()}/.pixi"
+    assert data["envs"] == [f"{os.getcwd()}/.pixi/envs/{env}" for env in ["default", "py39", "py310", "py311", "py312"]]
 
 
-def test_env_list_json():
-    result = run_conda(["env", "list", "--json"])
-    data = json.loads(result)
-    assert isinstance(data, dict)
-    assert set(data.keys()) == {"envs"}
-    assert isinstance(data["envs"], list)
-    assert all(isinstance(item, unicode) for item in data["envs"])
-
-
-def test_list():
+@pytest.mark.skip("Not implemented yet")
+def test_list_old():
     result = run_conda(["list", "-n", "base"])
     result_e = run_conda(["list", "-n", "base", "-e"])
     ref = subprocess.check_output(["micromamba", "list", "-n", "base"]).strip()
@@ -56,11 +39,18 @@ def test_list():
     assert result_e == "\n".join("=".join(l.split()[:-1]) for l in ref.splitlines())
 
 
-def test_run():
-    assert "42" == run_conda(["run", "echo", "42"])
-    assert "42" == run_conda(["run", "--no-capture-output", "echo", "42"])
+@pytest.mark.parametrize("env", ["default", "py39", "py310", "py311", "py312"])
+def test_list(env: str):
+    result = run_conda(["list", "-p", f"{os.getcwd()}/.pixi/envs/{env}"])
+    assert isinstance(result, str)
 
 
+@pytest.mark.parametrize("env", ["default", "py39", "py310", "py311", "py312"])
+def test_run(env: str):
+    assert "42" == run_conda(["run", "-p", f"{os.getcwd()}/.pixi/envs/{env}", "--no-capture-output", "echo", "42"])
+
+
+@pytest.mark.skip("Not implemented yet")
 def test_create(tmp_path):
     run_conda(["create", "-p", str(tmp_path / "env")])
     run_conda(["install", "-p", str(tmp_path / "env"), "xtensor"])

@@ -14,5 +14,5 @@ Describe your bug here
 **Logs**
 
 ```
-Paste the contents of ~/.cache/micromamba-pycharm.log here
+Paste the contents of ~/.cache/pixi-pycharm.log here
 ```
