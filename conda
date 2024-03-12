@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from __future__ import print_function
 
 import json
 import locale
@@ -60,7 +59,7 @@ def main(args):
         pixi(["info", *manifest()])
         if not str(PIXI_ROOT).endswith(".pixi"):
             raise AssertionError(
-                f"PIXI_ROOT={str(PIXI_ROOT)} does not end with '.pixi'. Is the file in the correct location?"
+                f"PIXI_ROOT={PIXI_ROOT!s} does not end with '.pixi'. Is the file in the correct location?"
             )
         print("Self-check successful.", file=sys.stderr)
     elif args == ["info", "--envs", "--json"]:
