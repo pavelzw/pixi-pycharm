@@ -60,7 +60,7 @@ You can now run your programs and tests as usual.
 
 ### Multiple environments
 
-If your project uses [multiple environments](https://pixi.sh/latest/environment) to tests differen Python versions or dependencies, you can add multiple environments to PyCharm
+If your project uses [multiple environments](https://pixi.sh/latest/environment) to tests different Python versions or dependencies, you can add multiple environments to PyCharm
 by specifying *Use existing environment* in the *Add Python Interpreter* dialog.
 
 ![Multiple pixi environments](./.github/assets/python-interpreters-multi-env-light.png#gh-light-mode-only)
