@@ -1,9 +1,31 @@
+<h1 align="center">
+
+[![License][license-badge]][license]
+[![CI][ci-badge]][ci]
+[![Latest release][latest-release-badge]][releases]
+[![Project Chat][chat-badge]][chat-url]
+[![Pixi Badge][pixi-badge]][pixi]
+
+
+[license-badge]: https://img.shields.io/github/license/pavelzw/pixi-pycharm?style=flat-square
+[license]: ./LICENSE
+[ci-badge]: https://img.shields.io/github/actions/workflow/status/pavelzw/pixi-pycharm/ci.yml?style=flat-square
+[ci]: https://github.com/pavelzw/pixi-pycharm/actions/
+[latest-release-badge]: https://img.shields.io/github/v/tag/pavelzw/pixi-pycharm?style=flat-square&label=latest&sort=semver
+[releases]: https://github.com/pavelzw/pixi-pycharm/releases
+[chat-badge]: https://img.shields.io/discord/1082332781146800168.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2&style=flat-square
+[chat-url]: https://discord.gg/kKV8ZxyzY4
+[pixi-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/prefix-dev/pixi/main/assets/badge/v0.json&style=flat-square
+[pixi]: https://pixi.sh
+
+</h1>
+
 # pixi-pycharm
 
-Add Pixi support to PyCharm.
+Add [pixi](https://github.com/prefix-dev/pixi) support to PyCharm.
 
 > [!WARNING]
-> This package does not support Windows as of now.
+> This package does not support Windows as of now, see [#5](https://github.com/pavelzw/pixi-pycharm/issues/5).
 
 ## How to use
 
@@ -85,4 +107,4 @@ It is recommended to rename the environments to something unique.
 
 Logs are written to `~/.cache/pixi-pycharm.log`.
 You can use them to debug problems.
-Please attach the logs when filing a bug report.
+Please attach the logs when [filing a bug report](https://github.com/pavelzw/pixi-pycharm/issues/new?template=bug-report.md).
