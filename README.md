@@ -10,7 +10,7 @@ Add Pixi support to PyCharm.
 To get started, add `pixi-pycharm` to your pixi project.
 
 ```bash
-pixi add pixi-pytest
+❯ pixi add pixi-pycharm
 ```
 
 This will ensure that the conda shim is installed in your project's environment.

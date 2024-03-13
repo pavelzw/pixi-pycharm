@@ -14,9 +14,9 @@ Describe your bug here
 ## Versions
 
 ```bash
-$ pixi --version
+❯ pixi --version
 # TODO
-$ pixi list | grep pixi-pycharm
+❯ pixi list | grep pixi-pycharm
 # TODO
 ```
 
