@@ -1,0 +1,26 @@
+changelog:
+  exclude:
+    labels:
+      - ignore for release
+  categories:
+    - title: 💥 Breaking changes
+      labels:
+        - breaking
+    - title: ✨ New features
+      labels:
+        - enhancement
+    - title: 👷🏻 CI
+      labels:
+        - ci
+    - title: 🐛 Bug fixes
+      labels:
+        - bug
+    - title: 📝 Documentation
+      labels:
+        - documentation
+    - title: ⬆️ Dependency updates
+      labels:
+        - dependencies
+    - title: 🤷🏻 Other changes
+      labels:
+        - "*"
