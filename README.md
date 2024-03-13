@@ -1,4 +1,4 @@
-# pixi-pycharm
+<h1 align="center">
 
 [![License][license-badge]][license]
 [![CI][ci-badge]][ci]
@@ -17,6 +17,10 @@
 [chat-url]: https://discord.gg/kKV8ZxyzY4
 [pixi-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/prefix-dev/pixi/main/assets/badge/v0.json&style=flat-square
 [pixi]: https://pixi.sh
+
+</h1>
+
+# pixi-pycharm
 
 Add [pixi](https://github.com/prefix-dev/pixi) support to PyCharm.
 
