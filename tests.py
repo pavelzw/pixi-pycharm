@@ -36,38 +36,31 @@ def test_info_envs_json():
     data = json.loads(result)
     assert isinstance(data, dict)
     assert set(data.keys()) == {"envs_dirs", "conda_prefix", "envs"}
-    assert data["envs_dirs"] == [str(Path.cwd() / ".pixi")]
-    assert data["conda_prefix"] == str(Path.cwd() / ".pixi")
+    assert data["envs_dirs"] == [str(Path.cwd() / ".pixi" / "envs")]
+    assert data["conda_prefix"] == str(Path.cwd() / ".pixi" / "envs")
     assert data["envs"] == [
         str(Path.cwd() / ".pixi" / "envs" / env)
         for env in ["default", "py39", "py310", "py311", "py312"]
     ]
 
 
-@pytest.mark.skip("Not implemented yet")
-def test_list_old():
-    result = run_conda(["list", "-n", "base"])
-    result_e = run_conda(["list", "-n", "base", "-e"])
-    ref = subprocess.check_output(["micromamba", "list", "-n", "base"]).strip()
-    ref = "\n".join(line.strip() for line in ref.splitlines()[4:])
-    assert result == ref
-    assert result_e == "\n".join("=".join(line.split()[:-1]) for line in ref.splitlines())
-
-
 @pytest.mark.parametrize("env", ["default", "py39", "py310", "py311", "py312"])
-def test_list(env: str):
-    result = run_conda(["list", "-p", str(Path.cwd() / ".pixi" / "envs" / env)])
+@pytest.mark.parametrize("use_prefix", [True, False])
+def test_list(env: str, use_prefix: bool):
+    env_args = ["-p", str(Path.cwd() / ".pixi" / "envs" / env)] if use_prefix else ["-n", env]
+    result = run_conda(["list", *env_args])
     assert isinstance(result, str)
 
 
 @pytest.mark.parametrize("env", ["default", "py39", "py310", "py311", "py312"])
-def test_run(env: str):
+@pytest.mark.parametrize("use_prefix", [True, False])
+def test_run(env: str, use_prefix: bool):
+    env_args = ["-p", str(Path.cwd() / ".pixi" / "envs" / env)] if use_prefix else ["-n", env]
     assert (
         run_conda(
             [
                 "run",
-                "-p",
-                str(Path.cwd() / ".pixi" / "envs" / env),
+                *env_args,
                 "--no-capture-output",
                 "echo",
                 "42",
