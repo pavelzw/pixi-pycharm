@@ -1,6 +1,20 @@
 # pixi-pycharm
 
-Add Pixi support to PyCharm.
+[![License][license-badge]][license]
+[![CI][build-badge]][build]
+[![Latest release][latest-release-badge]][releases]
+[![Project Chat][chat-badge]][chat-url]
+
+[license-badge]: https://img.shields.io/github/license/pavelzw/pixi-pycharm?style=flat-square
+[license]: ./LICENSE
+[build-badge]: https://img.shields.io/github/actions/workflow/status/pavelzw/pixi-pycharm/test.yml?style=flat-square
+[build]: https://github.com/pavelzw/pixi-pycharm/actions/
+[latest-release-badge]: https://img.shields.io/github/v/tag/pavelzw/pixi-pycharm?style=flat-square&label=latest&sort=semver
+[releases]: https://github.com/pavelzw/pixi-pycharm/releases
+[chat-badge]: https://img.shields.io/discord/1082332781146800168.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2&style=flat-square
+[chat-url]: https://discord.gg/kKV8ZxyzY4
+
+Add [pixi](https://github.com/prefix-dev/pixi) support to PyCharm.
 
 > [!WARNING]
 > This package does not support Windows as of now.
