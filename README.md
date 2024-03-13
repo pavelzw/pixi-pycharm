@@ -21,7 +21,7 @@
 Add [pixi](https://github.com/prefix-dev/pixi) support to PyCharm.
 
 > [!WARNING]
-> This package does not support Windows as of now.
+> This package does not support Windows as of now, see [#5](https://github.com/pavelzw/pixi-pycharm/issues/5).
 
 ## How to use
 
