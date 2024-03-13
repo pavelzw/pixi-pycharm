@@ -67,23 +67,21 @@ def main(args):
     elif args == ["info", "--envs", "--json"]:
         print_json(
             {
-                "envs_dirs": [str(PIXI_ROOT)],
-                "conda_prefix": str(PIXI_ROOT),
+                "envs_dirs": [str(PIXI_ROOT / "envs")],
+                "conda_prefix": str(PIXI_ROOT / "envs"),
                 "envs": pixi_envs(),
             },
         )
     elif args[0] == "list":
-        assert args[1] == "-p"
-        prefix = args[2]
-        env = prefix_to_env(prefix)
+        assert args[1] == "-p" or args[1] == "-n"
+        env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
         assert len(args) == 3  # noqa: PLR2004
         out = pixi_json(["list", *manifest(), *pixi_env_cli_params(env)])
         lines = ("{name} {version} {build}".format(**pkg) for pkg in out)
         print("\n".join(lines))
     elif args[0] == "run":
-        assert args[1] == "-p"
-        prefix = args[2]
-        env = prefix_to_env(prefix)
+        assert args[1] == "-p" or args[1] == "-n"
+        env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
         pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
         os.execlp(
             "pixi",
