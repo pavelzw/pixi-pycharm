@@ -20,7 +20,7 @@ Describe your bug here
 # TODO
 ```
 
-PyCharm version: TODO
+PyCharm version: TODO (see *About PyCharm*)
 
 Platform: TODO
 
