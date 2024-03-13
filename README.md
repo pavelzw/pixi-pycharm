@@ -103,4 +103,4 @@ It is recommended to rename the environments to something unique.
 
 Logs are written to `~/.cache/pixi-pycharm.log`.
 You can use them to debug problems.
-Please attach the logs when filing a bug report.
+Please attach the logs when [filing a bug report](https://github.com/pavelzw/pixi-pycharm/issues/new?template=bug-report.md).
