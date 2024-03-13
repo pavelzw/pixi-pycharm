@@ -7,11 +7,24 @@ assignees: ''
 
 ---
 
-**Description**
+## Description
 
 Describe your bug here
 
-**Logs**
+## Versions
+
+```bash
+$ pixi --version
+# TODO
+$ pixi list | grep pixi-pycharm
+# TODO
+```
+
+PyCharm version: TODO
+
+Platform: TODO
+
+## Logs
 
 ```
 Paste the contents of ~/.cache/pixi-pycharm.log here
