@@ -6,7 +6,6 @@
 [![Project Chat][chat-badge]][chat-url]
 [![Pixi Badge][pixi-badge]][pixi]
 
-
 [license-badge]: https://img.shields.io/github/license/pavelzw/pixi-pycharm?style=flat-square
 [license]: ./LICENSE
 [ci-badge]: https://img.shields.io/github/actions/workflow/status/pavelzw/pixi-pycharm/ci.yml?style=flat-square
@@ -24,9 +23,6 @@
 
 Add [pixi](https://github.com/prefix-dev/pixi) support to PyCharm.
 
-> [!WARNING]
-> This package does not support Windows as of now, see [#5](https://github.com/pavelzw/pixi-pycharm/issues/5).
-
 ## How to use
 
 To get started, add `pixi-pycharm` to your pixi project.
@@ -37,25 +33,16 @@ pixi add pixi-pycharm
 
 This will ensure that the conda shim is installed in your project's environment.
 
-> [!TIP]
-> If you get the error `could not determine any available versions for pixi-pycharm on win-64` when running `pixi add pixi-pycharm` (even when you're not on Windows),
-> this is because the package is not available on Windows and pixi tries to solve the environment for all platforms.
-> If you still want to use it in your pixi project (and are on Linux/macOS), you can add the following to your `pixi.toml`:
->
-> ```toml
-> [target.unix.dependencies]
-> pixi-pycharm = "*"
-> ```
->
-> This will tell pixi to only use this dependency on unix platforms.
-
 Having `pixi-pycharm` installed, you can now configure PyCharm to use your pixi environments.
 Go to the *Add Python Interpreter* dialog (bottom right corner of the PyCharm window) and select *Conda Environment*.
-Set *Conda Executable* to the full path of the `conda` file in your pixi environment.
+Set *Conda Executable* to the full path of the `conda` file (on Windows: `conda.bat`) in your pixi environment which is located in `.pixi/libexec`.
 You can get the path using the following command:
 
 ```bash
+# on Linux/macOS
 pixi run 'echo $CONDA_PREFIX/libexec/conda'
+# on Windows
+pixi run 'echo $CONDA_PREFIX\\libexec\\conda.bat'
 ```
 
 This is an executable that tricks PyCharm into thinking it's the proper `conda` executable.
