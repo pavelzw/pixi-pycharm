@@ -30,4 +30,3 @@ jobs:
       - run: pixi run test
         env:
           XDG_CACHE_HOME: ""
-        
