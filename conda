@@ -54,6 +54,50 @@ def pixi_env_cli_params(env):
     return ["-e", env] if env != "default" else []
 
 
+def conda_info_envs_json():
+    print_json(
+        {
+            "envs_dirs": [str(PIXI_ROOT / "envs")],
+            "conda_prefix": str(PIXI_ROOT / "envs"),
+            "envs": pixi_envs(),
+        },
+    )
+
+
+def conda_list(args):
+    assert args[1] == "-p" or args[1] == "-n"
+    env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
+    assert len(args) == 3 or len(args) == 4  # noqa: PLR2004
+    out = pixi_json(["list", *std_pixi_args(), *manifest(), *pixi_env_cli_params(env)])
+    if len(args) == 3:  # noqa: PLR2004
+        lines = ("{name} {version} {build}".format(**pkg) for pkg in out)
+    else:
+        # observed in PyCharm 2024.1 for Windows
+        assert args[3] == "-e"
+        lines = ("{name}={version}={build}".format(**pkg) for pkg in out)
+    print("\n".join(lines))
+
+
+def conda_run(args):
+    assert args[1] == "-p" or args[1] == "-n"
+    env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
+
+    if os.name == "nt":
+        # https://bugs.python.org/issue20451
+        pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
+    else:
+        pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
+    os.execlp(
+        "pixi",
+        "pixi",
+        "run",
+        *std_pixi_args(),
+        *manifest(),
+        *pixi_env_cli_params(env),
+        *pixi_run_args,
+    )
+
+
 def main(args):
     if args == ["self-check"]:
         try:
@@ -63,51 +107,22 @@ def main(args):
             return 1
         pixi(["info", *std_pixi_args(), *manifest()])
         if not str(PIXI_ROOT).endswith(".pixi"):
-            msg = (
+            print(
                 f"PIXI_ROOT={PIXI_ROOT!s} does not end with '.pixi'."
-                "Is it in the correct location?"
+                "Is it in the correct location?",
+                file=sys.stderr,
             )
-            raise AssertionError(msg)
+            return 1
         print("Self-check successful.", file=sys.stderr)
+        if not MANIFEST_PATH.exists():
+            print(f"Manifest file not found at {MANIFEST_PATH!s}.", file=sys.stderr)
+            return 1
     elif args == ["info", "--envs", "--json"]:
-        print_json(
-            {
-                "envs_dirs": [str(PIXI_ROOT / "envs")],
-                "conda_prefix": str(PIXI_ROOT / "envs"),
-                "envs": pixi_envs(),
-            },
-        )
+        conda_info_envs_json()
     elif args[0] == "list":
-        assert args[1] == "-p" or args[1] == "-n"
-        env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
-        assert len(args) == 3 or len(args) == 4  # noqa: PLR2004
-        out = pixi_json(["list", *std_pixi_args(), *manifest(), *pixi_env_cli_params(env)])
-        if len(args) == 3:  # noqa: PLR2004
-            lines = ("{name} {version} {build}".format(**pkg) for pkg in out)
-        else:
-            # observed in PyCharm 2024.1 for Windows
-            assert args[3] == "-e"
-            lines = ("{name}={version}={build}".format(**pkg) for pkg in out)
-        print("\n".join(lines))
-
+        conda_list()
     elif args[0] == "run":
-        assert args[1] == "-p" or args[1] == "-n"
-        env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
-
-        if os.name == "nt":
-            # https://bugs.python.org/issue20451
-            pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
-        else:
-            pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
-        os.execlp(
-            "pixi",
-            "pixi",
-            "run",
-            *std_pixi_args(),
-            *manifest(),
-            *pixi_env_cli_params(env),
-            *pixi_run_args,
-        )
+        conda_run(args)
     elif args[0] == "activate":
         msg = f"{args!s}\n`conda activate` not implemented. PyCharm will fallback to `conda run`."
         raise NotImplementedError(msg)
