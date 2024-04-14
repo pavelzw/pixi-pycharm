@@ -12,7 +12,8 @@ from pathlib import Path
 
 ENABLE_LOGGING = True
 
-# assuming file is in .pixi/envs/<env>/libexec/conda or .pixi\envs\<env>\libexec\conda.bat\..\conda.py
+# assuming file is in .pixi/envs/<env>/libexec/conda
+# or .pixi\envs\<env>\libexec\conda.bat\..\conda.py
 PIXI_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 PROJECT_ROOT = PIXI_ROOT.parent
 MANIFEST_PATH = PROJECT_ROOT / "pixi.toml"
@@ -81,7 +82,7 @@ def main(args):
         env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
         assert len(args) == 3 or len(args) == 4 # noqa: PLR2004
         out = pixi_json(["list", *std_pixi_args(), *manifest(), *pixi_env_cli_params(env)])
-        if len(args) == 3:
+        if len(args) == 3: # noqa: PLR2004
             lines = ("{name} {version} {build}".format(**pkg) for pkg in out)
         else:
             # observed in PyCharm 2024.1 for Windows
