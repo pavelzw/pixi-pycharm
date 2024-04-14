@@ -46,9 +46,10 @@ def test_info_envs_json():
 
 @pytest.mark.parametrize("env", ["default", "py39", "py310", "py311", "py312"])
 @pytest.mark.parametrize("use_prefix", [True, False])
-def test_list(env: str, use_prefix: bool):
+@pytest.mark.parametrize("use_export_format", [True, False])
+def test_list(env: str, use_prefix: bool, use_export_format: bool):
     env_args = ["-p", str(Path.cwd() / ".pixi" / "envs" / env)] if use_prefix else ["-n", env]
-    result = run_conda(["list", *env_args])
+    result = run_conda(["list", *env_args, *(["-e"] if use_export_format else [])])
     assert isinstance(result, str)
 
 

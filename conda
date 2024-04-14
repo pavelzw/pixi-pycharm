@@ -27,13 +27,17 @@ def manifest():
     return ["--manifest-path", str(MANIFEST_PATH)]
 
 
+def std_pixi_args():
+    return ["-q", "--no-progress"]
+
+
 def pixi_json(cmd):
     return json.loads(pixi([*cmd, "--json"]))
 
 
 def pixi_envs():
-    platform = pixi_json(["info", *manifest()])["platform"]
-    envs = pixi_json(["info", *manifest()])["environments_info"]
+    platform = pixi_json(["info", *std_pixi_args(), *manifest()])["platform"]
+    envs = pixi_json(["info", *std_pixi_args(), *manifest()])["environments_info"]
     return [env["prefix"] for env in envs if platform in env["platforms"]]
 
 
@@ -56,7 +60,7 @@ def main(args):
         except (FileNotFoundError, subprocess.CalledProcessError):
             print("'pixi' not found, is it on the $PATH?", file=sys.stderr)
             return 1
-        pixi(["info", *manifest()])
+        pixi(["info", *std_pixi_args(), *manifest()])
         if not str(PIXI_ROOT).endswith(".pixi"):
             msg = (
                 f"PIXI_ROOT={PIXI_ROOT!s} does not end with '.pixi'."
@@ -75,18 +79,30 @@ def main(args):
     elif args[0] == "list":
         assert args[1] == "-p" or args[1] == "-n"
         env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
-        assert len(args) == 3  # noqa: PLR2004
-        out = pixi_json(["list", *manifest(), *pixi_env_cli_params(env)])
-        lines = ("{name} {version} {build}".format(**pkg) for pkg in out)
+        assert len(args) == 3 or len(args) == 4 # noqa: PLR2004
+        out = pixi_json(["list", *std_pixi_args(), *manifest(), *pixi_env_cli_params(env)])
+        if len(args) == 3:
+            lines = ("{name} {version} {build}".format(**pkg) for pkg in out)
+        else:
+            # observed in PyCharm 2024.1 for Windows
+            assert args[3] == "-e"
+            lines = ("{name}={version}={build}".format(**pkg) for pkg in out)
         print("\n".join(lines))
+
     elif args[0] == "run":
         assert args[1] == "-p" or args[1] == "-n"
         env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
-        pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
+
+        if sys.platform == "win32":
+            # https://bugs.python.org/issue20451
+            pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
+        else:
+            pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
         os.execlp(
             "pixi",
             "pixi",
             "run",
+            *std_pixi_args(),
             *manifest(),
             *pixi_env_cli_params(env),
             *pixi_run_args,

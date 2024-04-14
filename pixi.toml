@@ -7,8 +7,8 @@ channels = ["conda-forge"]
 platforms = ["osx-arm64", "linux-64", "linux-aarch64", "osx-64"]
 
 [tasks]
-copy-file = "mkdir -p .pixi/envs/$PIXI_ENVIRONMENT_NAME/libexec && rm -f .pixi/envs/$PIXI_ENVIRONMENT_NAME/libexec/conda && ln -s ../../../../conda .pixi/envs/$PIXI_ENVIRONMENT_NAME/libexec/conda"
-test = "pytest tests.py"
+copy-file = "mkdir -p .pixi/envs/$PIXI_ENVIRONMENT_NAME/libexec && rm -f .pixi/envs/$PIXI_ENVIRONMENT_NAME/libexec/conda && cp conda .pixi/envs/$PIXI_ENVIRONMENT_NAME/libexec/conda"
+test = {cmd = "pytest tests.py", depends_on = ["copy-file"]}
 lint = "ruff check --fix"
 lint-check = "ruff check"
 fmt = "ruff format"
