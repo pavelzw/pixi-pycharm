@@ -9,8 +9,20 @@ import pytest
 
 
 def run_conda(args):
-    return (
-        subprocess.check_output(
+    if os.name == "nt":
+        output = subprocess.check_output(
+            [
+                Path.cwd()
+                / ".pixi"
+                / "envs"
+                / os.environ["PIXI_ENVIRONMENT_NAME"]
+                / "libexec"
+                / "conda.bat",
+                *args,
+            ],
+        )
+    else:
+        output = subprocess.check_output(
             [
                 sys.executable,
                 Path.cwd()
@@ -22,9 +34,7 @@ def run_conda(args):
                 *args,
             ],
         )
-        .decode(locale.getpreferredencoding())
-        .rstrip()
-    )
+    return output.decode(locale.getpreferredencoding()).rstrip()
 
 
 def test_self_check():
@@ -46,9 +56,10 @@ def test_info_envs_json():
 
 @pytest.mark.parametrize("env", ["default", "py39", "py310", "py311", "py312"])
 @pytest.mark.parametrize("use_prefix", [True, False])
-def test_list(env: str, use_prefix: bool):
+@pytest.mark.parametrize("use_export_format", [True, False])
+def test_list(env: str, use_prefix: bool, use_export_format: bool):
     env_args = ["-p", str(Path.cwd() / ".pixi" / "envs" / env)] if use_prefix else ["-n", env]
-    result = run_conda(["list", *env_args])
+    result = run_conda(["list", *env_args, *(["-e"] if use_export_format else [])])
     assert isinstance(result, str)
 
 
@@ -68,9 +79,24 @@ def test_run(env: str, use_prefix: bool):
         )
         == "42"
     )
+    assert run_conda(
+        [
+            "run",
+            *env_args,
+            "--no-capture-output",
+            "python",
+            "-c",
+            "import sys; print(sys.executable)",
+        ]
+    ).endswith(f"python{'.EXE' if os.name == 'nt' else ''}")
 
 
 @pytest.mark.skip("Not implemented yet")
 def test_create(tmp_path):
     run_conda(["create", "-p", str(tmp_path / "env")])
     run_conda(["install", "-p", str(tmp_path / "env"), "xtensor"])
+
+
+@pytest.mark.xfail(reason="Not implemented yet")
+def test_activate():
+    run_conda(["activate", "py39"])
