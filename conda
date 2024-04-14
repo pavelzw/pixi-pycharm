@@ -120,7 +120,7 @@ def main(args):
     elif args == ["info", "--envs", "--json"]:
         conda_info_envs_json()
     elif args[0] == "list":
-        conda_list()
+        conda_list(args)
     elif args[0] == "run":
         conda_run(args)
     elif args[0] == "activate":
