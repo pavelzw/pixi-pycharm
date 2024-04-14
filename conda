@@ -80,7 +80,7 @@ def conda_run(args):
 
     if os.name == "nt":
         # https://bugs.python.org/issue20451
-        pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
+        pixi_run_args = [f'"{arg}"' for arg in args[3:] if arg != "--no-capture-output"]
     else:
         pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
     os.execlp(
