@@ -47,7 +47,7 @@ def print_json(data):
 
 
 def prefix_to_env(prefix):
-    return prefix.split("/")[-1]
+    return Path(prefix).name
 
 
 def pixi_env_cli_params(env):
