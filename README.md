@@ -35,7 +35,7 @@ This will ensure that the conda shim is installed in your project's environment.
 
 Having `pixi-pycharm` installed, you can now configure PyCharm to use your pixi environments.
 Go to the *Add Python Interpreter* dialog (bottom right corner of the PyCharm window) and select *Conda Environment*.
-Set *Conda Executable* to the full path of the `conda` file (on Windows: `conda.bat`) in your pixi environment which is located in `.pixi/libexec`.
+Set _Conda Executable_ to the full path of the `conda` file (on Windows: `conda.bat`) which is located in `.pixi/envs/default/libexec`.
 You can get the path using the following command:
 
 ```bash
