@@ -9,8 +9,20 @@ import pytest
 
 
 def run_conda(args):
-    return (
-        subprocess.check_output(
+    if os.name == "nt":
+        output = subprocess.check_output(
+            [
+                Path.cwd()
+                / ".pixi"
+                / "envs"
+                / os.environ["PIXI_ENVIRONMENT_NAME"]
+                / "libexec"
+                / "conda.bat",
+                *args,
+            ],
+        )
+    else:
+        output = subprocess.check_output(
             [
                 sys.executable,
                 Path.cwd()
@@ -22,9 +34,7 @@ def run_conda(args):
                 *args,
             ],
         )
-        .decode(locale.getpreferredencoding())
-        .rstrip()
-    )
+    return output.decode(locale.getpreferredencoding()).rstrip()
 
 
 def test_self_check():

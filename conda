@@ -94,7 +94,7 @@ def main(args):
         assert args[1] == "-p" or args[1] == "-n"
         env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
 
-        if sys.platform == "win32":
+        if os.name == "nt":
             # https://bugs.python.org/issue20451
             pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
         else:
