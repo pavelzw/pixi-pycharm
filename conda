@@ -12,8 +12,8 @@ from pathlib import Path
 
 ENABLE_LOGGING = True
 
-# assuming file is in .pixi/envs/<env>/libexec/conda
-PIXI_ROOT = Path(__file__).parent.parent.parent.parent
+# assuming file is in .pixi/envs/<env>/libexec/conda or .pixi\envs\<env>\libexec\conda.bat\..\conda.py
+PIXI_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 PROJECT_ROOT = PIXI_ROOT.parent
 MANIFEST_PATH = PROJECT_ROOT / "pixi.toml"
 
