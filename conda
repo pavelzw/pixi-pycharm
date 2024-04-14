@@ -108,6 +108,9 @@ def main(args):
             *pixi_env_cli_params(env),
             *pixi_run_args,
         )
+    elif args[0] == "activate":
+        msg = f"{args!s}\n`conda activate` not implemented. PyCharm will fallback to `conda run`."
+        raise NotImplementedError(msg)
     else:
         raise NotImplementedError(str(args))
 

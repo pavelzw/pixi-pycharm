@@ -85,3 +85,8 @@ def test_run(env: str, use_prefix: bool):
 def test_create(tmp_path):
     run_conda(["create", "-p", str(tmp_path / "env")])
     run_conda(["install", "-p", str(tmp_path / "env"), "xtensor"])
+
+
+@pytest.mark.xfail(reason="Not implemented yet")
+def test_activate():
+    run_conda(["activate", "py39"])
