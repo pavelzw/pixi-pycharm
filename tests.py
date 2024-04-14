@@ -79,6 +79,16 @@ def test_run(env: str, use_prefix: bool):
         )
         == "42"
     )
+    assert run_conda(
+        [
+            "run",
+            *env_args,
+            "--no-capture-output",
+            "python",
+            "-c",
+            "import sys; print(sys.executable)",
+        ]
+    ).endswith(f"python{'.EXE' if os.name == 'nt' else ''}")
 
 
 @pytest.mark.skip("Not implemented yet")
