@@ -12,7 +12,7 @@ from pathlib import Path
 
 ENABLE_LOGGING = True
 
-# assuming file is in .pixi/envs/<env>/libexec/conda
+# assuming __file__ is .pixi/envs/<env>/libexec/conda
 # or .pixi\envs\<env>\libexec\conda.bat\..\conda.py
 PIXI_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 PROJECT_ROOT = PIXI_ROOT.parent
@@ -24,12 +24,8 @@ def pixi(cmd):
     return out.decode(locale.getpreferredencoding())
 
 
-def manifest():
-    return ["--manifest-path", str(MANIFEST_PATH)]
-
-
 def std_pixi_args():
-    return ["-q", "--no-progress"]
+    return ["-q", "--no-progress", "--manifest-path", str(MANIFEST_PATH)]
 
 
 def pixi_json(cmd):
@@ -37,8 +33,8 @@ def pixi_json(cmd):
 
 
 def pixi_envs():
-    platform = pixi_json(["info", *std_pixi_args(), *manifest()])["platform"]
-    envs = pixi_json(["info", *std_pixi_args(), *manifest()])["environments_info"]
+    platform = pixi_json(["info", *std_pixi_args()])["platform"]
+    envs = pixi_json(["info", *std_pixi_args()])["environments_info"]
     return [env["prefix"] for env in envs if platform in env["platforms"]]
 
 
@@ -68,7 +64,7 @@ def conda_list(args):
     assert args[1] == "-p" or args[1] == "-n"
     env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
     assert len(args) == 3 or len(args) == 4  # noqa: PLR2004
-    out = pixi_json(["list", *std_pixi_args(), *manifest(), *pixi_env_cli_params(env)])
+    out = pixi_json(["list", *std_pixi_args(), *pixi_env_cli_params(env)])
     if len(args) == 3:  # noqa: PLR2004
         lines = ("{name} {version} {build}".format(**pkg) for pkg in out)
     else:
@@ -92,7 +88,6 @@ def conda_run(args):
         "pixi",
         "run",
         *std_pixi_args(),
-        *manifest(),
         *pixi_env_cli_params(env),
         *pixi_run_args,
     )
@@ -105,7 +100,7 @@ def main(args):
         except (FileNotFoundError, subprocess.CalledProcessError):
             print("'pixi' not found, is it on the $PATH?", file=sys.stderr)
             return 1
-        pixi(["info", *std_pixi_args(), *manifest()])
+        pixi(["info", *std_pixi_args()])
         if not str(PIXI_ROOT).endswith(".pixi"):
             print(
                 f"PIXI_ROOT={PIXI_ROOT!s} does not end with '.pixi'."
