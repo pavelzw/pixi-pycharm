@@ -25,4 +25,9 @@ jobs:
       - run: pixi run lint-check
       - run: pixi run fmt-check
       - run: pixi run test
-      - run: XDG_CACHE_HOME= pixi run test
+        env:
+          XDG_CACHE_HOME: ${{ runner.temp }}
+      - run: pixi run test
+        env:
+          XDG_CACHE_HOME: ""
+        
