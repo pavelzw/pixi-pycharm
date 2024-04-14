@@ -80,9 +80,9 @@ def main(args):
     elif args[0] == "list":
         assert args[1] == "-p" or args[1] == "-n"
         env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
-        assert len(args) == 3 or len(args) == 4 # noqa: PLR2004
+        assert len(args) == 3 or len(args) == 4  # noqa: PLR2004
         out = pixi_json(["list", *std_pixi_args(), *manifest(), *pixi_env_cli_params(env)])
-        if len(args) == 3: # noqa: PLR2004
+        if len(args) == 3:  # noqa: PLR2004
             lines = ("{name} {version} {build}".format(**pkg) for pkg in out)
         else:
             # observed in PyCharm 2024.1 for Windows
