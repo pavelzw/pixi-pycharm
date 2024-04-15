@@ -56,6 +56,7 @@ def run_conda(libexec_conda, *args):
                 libexec_conda,
                 *args,
             ],
+            env=environ(),
         )
         .decode(locale.getpreferredencoding())
         .rstrip()
