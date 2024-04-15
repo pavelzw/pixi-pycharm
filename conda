@@ -16,7 +16,6 @@ ENABLE_LOGGING = True
 # or .pixi\envs\<env>\libexec\conda.bat\..\conda.py
 PIXI_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 PROJECT_ROOT = PIXI_ROOT.parent
-MANIFEST_PATH = PROJECT_ROOT / "pixi.toml"
 
 
 def pixi(cmd):
@@ -24,8 +23,19 @@ def pixi(cmd):
     return out.decode(locale.getpreferredencoding())
 
 
+def manifest_path():
+    manifest_path = PROJECT_ROOT / "pixi.toml"
+    if manifest_path.exists():
+        return manifest_path
+    manifest_path = PROJECT_ROOT / "pyproject.toml"
+    if manifest_path.exists() and manifest_path.read_text().find("[tool.pixi") != -1:
+        return manifest_path
+    msg = "Manifest file not found."
+    raise FileNotFoundError(msg)
+
+
 def std_pixi_args():
-    return ["-q", "--no-progress", "--manifest-path", str(MANIFEST_PATH)]
+    return ["-q", "--no-progress", "--manifest-path", str(manifest_path())]
 
 
 def pixi_json(cmd):
@@ -109,9 +119,6 @@ def main(args):
             )
             return 1
         print("Self-check successful.", file=sys.stderr)
-        if not MANIFEST_PATH.exists():
-            print(f"Manifest file not found at {MANIFEST_PATH!s}.", file=sys.stderr)
-            return 1
     elif args == ["info", "--envs", "--json"]:
         conda_info_envs_json()
     elif args[0] == "list":
