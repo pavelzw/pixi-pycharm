@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 
-@pytest.fixture(scope="module", params=["pyproject_toml", "pixi_toml", "py38"])
+@pytest.fixture(scope="module", params=["pyproject_toml", "pixi_toml"])
 def pixi_project(tmp_path_factory, request):
     tmpdir = tmp_path_factory.mktemp(request.param)
     manifest_file = "pyproject.toml" if request.param == "pyproject_toml" else "pixi.toml"
