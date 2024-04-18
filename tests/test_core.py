@@ -148,8 +148,12 @@ def test_not_implemented(libexec_conda, tmp_path):
         assert proc.returncode == 1
         return proc.stderr.decode(locale.getpreferredencoding())
 
-    assert "NotImplementedError" in run_conda_fail_stderr(libexec_conda, "create", "-p", str(tmp_path / "env"))
-    assert "NotImplementedError" in run_conda_fail_stderr(libexec_conda, "install", "-p", str(tmp_path / "env"), "xtensor")
+    assert "NotImplementedError" in run_conda_fail_stderr(
+        libexec_conda, "create", "-p", str(tmp_path / "env")
+    )
+    assert "NotImplementedError" in run_conda_fail_stderr(
+        libexec_conda, "install", "-p", str(tmp_path / "env"), "xtensor"
+    )
     activate_output = run_conda_fail_stderr(libexec_conda, "activate", "py39")
     assert "NotImplementedError" in activate_output
     assert "PyCharm will fallback to" in activate_output
