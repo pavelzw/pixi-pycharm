@@ -28,6 +28,7 @@ def pixi_project(tmp_path_factory, request):
 
 def environ():
     env = os.environ
+    # PATH would need to be removed as well we need pixi from PATH
     for var in [
         "CONDA_DEFAULT_ENV",
         "CONDA_PREFIX",
