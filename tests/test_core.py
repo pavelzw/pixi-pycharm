@@ -20,12 +20,28 @@ def pixi_project(tmp_path_factory, request):
         Path.cwd() / "tests" / "data" / request.param / "pixi.lock",
         tmpdir / "pixi.lock",
     )
-    subprocess.run(["pixi", "install", "--locked"], cwd=tmpdir, env=environ(), check=True)
+    subprocess.run(["pixi", "install", "--locked", "--no-progress"], cwd=tmpdir, env=environ(), check=True)
     return tmpdir
 
 
 def environ():
-    return {"PATH": os.environ["PATH"]}
+    env = os.environ
+    for var in [
+        "CONDA_DEFAULT_ENV",
+        "CONDA_PREFIX",
+        "PIXI_ENVIRONMENT_NAME",
+        "PIXI_ENVIRONMENT_PLATFORMS",
+        "PIXI_EXE",
+        "PIXI_IN_SHELL",
+        "PIXI_PROJECT_MANIFEST",
+        "PIXI_PROJECT_NAME",
+        "PIXI_PROJECT_ROOT",
+        "PIXI_PROJECT_VERSION",
+        "PIXI_PROMPT",
+    ]:
+        if var in env:
+            del env[var]
+    return env
 
 
 @pytest.fixture()
