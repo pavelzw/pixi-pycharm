@@ -28,7 +28,7 @@ def manifest_path():
     if manifest_path.exists():
         return manifest_path
     manifest_path = PROJECT_ROOT / "pyproject.toml"
-    if manifest_path.exists() and manifest_path.read_text().find("[tool.pixi") != -1:
+    if manifest_path.exists() and manifest_path.read_text(encoding="utf8").find("[tool.pixi") != -1:
         return manifest_path
     msg = "Manifest file not found."
     raise FileNotFoundError(msg)
