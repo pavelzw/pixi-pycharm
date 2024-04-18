@@ -20,8 +20,7 @@ def pixi_project(tmp_path_factory, request):
         Path.cwd() / "tests" / "data" / request.param / "pixi.lock",
         tmpdir / "pixi.lock",
     )
-    subprocess.run(["pixi", "install"], cwd=tmpdir, env=environ(), check=False)
-    subprocess.run(["ls", "-la"], cwd=tmpdir, env=environ(), check=False)
+    subprocess.run(["pixi", "install", "--locked"], cwd=tmpdir, env=environ(), check=True)
     return tmpdir
 
 
