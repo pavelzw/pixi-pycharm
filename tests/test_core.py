@@ -134,12 +134,20 @@ def test_run(libexec_conda, pixi_project, env: str, use_prefix: bool):
     ).endswith(f"python{'.EXE' if os.name == 'nt' else ''}")
 
 
-@pytest.mark.skip("Not implemented yet")
-def test_create(libexec_conda, tmp_path):
-    run_conda(libexec_conda, "create", "-p", str(tmp_path / "env"))
-    run_conda(libexec_conda, "install", "-p", str(tmp_path / "env"), "xtensor")
+def test_not_implemented(libexec_conda, tmp_path):
+    def run_conda_fail_stderr(libexec_conda, *args):
+        proc = subprocess.run(
+            [
+                libexec_conda,
+                *args,
+            ],
+            env=environ(),
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        assert proc.returncode == 1
+        return proc.stderr.decode(locale.getpreferredencoding())
 
-
-@pytest.mark.xfail(reason="Not implemented yet")
-def test_activate(libexec_conda):
-    run_conda(libexec_conda, "activate", "py39")
+    assert "NotImplementedError" in run_conda_fail_stderr(libexec_conda, "create", "-p", str(tmp_path / "env"))
+    assert "NotImplementedError" in run_conda_fail_stderr(libexec_conda, "install", "-p", str(tmp_path / "env"), "xtensor")
+    assert "NotImplementedError" in run_conda_fail_stderr(libexec_conda, "activate", "py39")
