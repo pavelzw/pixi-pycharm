@@ -1,6 +1,8 @@
 line-length = 100
 
-include = ["tests.py", "conda"]
+target-version = "py38"
+
+include = ["tests/*.py", "conda"]
 
 [lint]
 select = ["ALL"]
