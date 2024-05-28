@@ -1,0 +1,5 @@
+on: push
+
+jobs:
+  autoupdate:
+    uses: ./autoupdate.yml
