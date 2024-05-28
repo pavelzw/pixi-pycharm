@@ -13,7 +13,7 @@ on:
         type: string
 
 jobs:
-  gke-deployment:
+  pixi-update:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,16 +26,16 @@ jobs:
       - run: |
           python3 -m pip install pixi-diff-to-markdown --break-system-packages
           # pixi global install pixi-diff-to-markdown
-          echo diff="$(pixi update --json | pixi-diff-to-markdown)" >> $GITHUB_OUTPUT
+          pixi update --json | pixi-diff-to-markdown >> diff.md
         id: pixi-diff
       - uses: peter-evans/create-pull-request@6d6857d36972b65feb161a90e484f2984215f83e
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Update pixi lockfile
           title: Update pixi lockfile
-          body: ${{ steps.pixi-diff.outputs.diff }}
+          body-path: diff.md
           branch: update-pixi
           base: main
           labels: pixi
           delete-branch: true
-          changes: pixi.lock
+          add-paths: pixi.lock
