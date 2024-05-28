@@ -2,4 +2,4 @@ on: push
 
 jobs:
   autoupdate:
-    uses: pavelzw/pixi-pycharm/autoupdate.yml@autoupdate
+    uses: pavelzw/pixi-pycharm/.github/workflows/_autoupdate.yml@autoupdate
