@@ -19,7 +19,7 @@ jobs:
         pixi-version: ['v0.19.1', 'latest']
     steps:
       - uses: actions/checkout@v4
-      - uses: prefix-dev/setup-pixi@v0.6.0
+      - uses: prefix-dev/setup-pixi@v0.8.1
         with:
           pixi-version: ${{ matrix.pixi-version }}
       - run: pixi run fmt-check
