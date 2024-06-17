@@ -1,9 +1,0 @@
-on: push
-
-permissions:
-  contents: write # peter-evans/create-pull-request
-  pull-requests: write # peter-evans/create-pull-request
-
-jobs:
-  autoupdate:
-    uses: pavelzw/pixi-pycharm/.github/workflows/_autoupdate.yml@autoupdate
