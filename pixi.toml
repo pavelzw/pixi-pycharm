@@ -17,3 +17,15 @@ fmt-check = "ruff format --check"
 python = "3.12.*"
 pytest = "*"
 ruff = ">=0.3.2,<0.4"
+
+[feature.pixi.dependencies]
+pixi = "*"
+[feature.pixi019.dependencies]
+pixi = "0.19.*"
+[feature.pixi024.dependencies]
+pixi = "0.24.*"
+
+[environments]
+default = ["pixi"]
+pixi019 = ["pixi019"]
+pixi024 = ["pixi024"]
