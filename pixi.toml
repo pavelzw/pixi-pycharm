@@ -1,6 +1,6 @@
 [project]
 name = "pixi-pycharm"
-version = "0.0.5"
+version = "0.0.6"
 description = "Conda shim for PyCharm that proxies pixi"
 authors = ["Pavel Zwerschke <pavelzw@gmail.com>"]
 channels = ["conda-forge"]
@@ -14,12 +14,16 @@ fmt = "ruff format"
 fmt-check = "ruff format --check"
 
 [dependencies]
-python = "3.12.*"
+python = ">=3.8"
 pytest = "*"
-ruff = ">=0.3.2,<0.4"
+ruff = "*"
 
 [feature.pixi.dependencies]
 pixi = "*"
+[feature.py38.dependencies]
+python = "3.8.*"
+[feature.py312.dependencies]
+python = "3.12.*"
 [feature.pixi019.dependencies]
 pixi = "0.19.*"
 [feature.pixi024.dependencies]
@@ -27,5 +31,7 @@ pixi = "0.24.*"
 
 [environments]
 default = ["pixi"]
-pixi019 = ["pixi019"]
-pixi024 = ["pixi024"]
+py38-pixi019 = ["py38", "pixi019"]
+py38-pixi024 = ["py38", "pixi024"]
+py312-pixi019 = ["py312", "pixi019"]
+py312-pixi024 = ["py312", "pixi024"]
