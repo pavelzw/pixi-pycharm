@@ -8,14 +8,14 @@ import os
 import subprocess
 import sys
 import traceback
+from functools import lru_cache
 from pathlib import Path
 
 ENABLE_LOGGING = True
 
 # assuming __file__ is .pixi/envs/<env>/libexec/conda
 # or .pixi\envs\<env>\libexec\conda.bat\..\conda.py
-PIXI_ROOT = Path(__file__).resolve().parent.parent.parent.parent
-PROJECT_ROOT = PIXI_ROOT.parent
+PIXI_ENVIRONMENT_FILE = Path(__file__).resolve().parent.parent / "conda-meta" / "pixi"
 
 
 def pixi(cmd):
@@ -23,15 +23,26 @@ def pixi(cmd):
     return out.decode(locale.getpreferredencoding())
 
 
+@lru_cache
 def manifest_path():
-    manifest_path = PROJECT_ROOT / "pixi.toml"
+    if PIXI_ENVIRONMENT_FILE.exists():
+        with PIXI_ENVIRONMENT_FILE.open(encoding="utf8") as f:
+            return Path(json.load(f)["manifest_path"])
+
+    # pixi < 0.24.0
+    project_root = Path(__file__).resolve().parent.parent.parent.parent.parent
+    manifest_path = project_root / "pixi.toml"
     if manifest_path.exists():
         return manifest_path
-    manifest_path = PROJECT_ROOT / "pyproject.toml"
+    manifest_path = project_root / "pyproject.toml"
     if manifest_path.exists() and manifest_path.read_text(encoding="utf8").find("[tool.pixi") != -1:
         return manifest_path
     msg = "Manifest file not found."
     raise FileNotFoundError(msg)
+
+
+def pixi_root():
+    return manifest_path().parent / ".pixi"
 
 
 def std_pixi_args():
@@ -63,8 +74,8 @@ def pixi_env_cli_params(env):
 def conda_info_envs_json():
     print_json(
         {
-            "envs_dirs": [str(PIXI_ROOT / "envs")],
-            "conda_prefix": str(PIXI_ROOT / "envs"),
+            "envs_dirs": [str(pixi_root() / "envs")],
+            "conda_prefix": str(pixi_root() / "envs"),
             "envs": pixi_envs(),
         },
     )
@@ -111,10 +122,15 @@ def main(args):
             print("'pixi' not found, is it on the $PATH?", file=sys.stderr)
             return 1
         pixi(["info", *std_pixi_args()])
-        if not str(PIXI_ROOT).endswith(".pixi"):
+        if not manifest_path().exists():
             print(
-                f"PIXI_ROOT={PIXI_ROOT!s} does not end with '.pixi'."
-                "Is it in the correct location?",
+                f"pixi manifest path {manifest_path()!s} does not exist.",
+                file=sys.stderr,
+            )
+            return 1
+        if not pixi_root().exists():
+            print(
+                f"pixi root {pixi_root()!s} does not exist.",
                 file=sys.stderr,
             )
             return 1

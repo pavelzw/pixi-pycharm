@@ -15,8 +15,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['ubuntu-latest', 'macos-latest', 'windows-latest']
-        environment: ['default', 'pixi024', 'pixi019']
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        environment:
+          - default
+          - py38-pixi019
+          - py312-pixi019
+          - py38-pixi024
+          - py312-pixi024
     steps:
       - uses: actions/checkout@v4
       - uses: prefix-dev/setup-pixi@v0.8.1
