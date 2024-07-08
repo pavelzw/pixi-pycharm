@@ -70,7 +70,10 @@ You can now run your programs and tests as usual.
 > [!TIP]
 > In order for PyCharm to not get confused about the `.pixi` directory, please mark it as excluded.
 >
-> ![Mark Directory as excluded 1](./.github/assets/mark-directory-as-excluded-1-light.png#gh-light-mode-only) ![Mark Directory as excluded 1](./.github/assets/mark-directory-as-excluded-1-dark.png#gh-dark-mode-only) ![Mark Directory as excluded 2](./.github/assets/mark-directory-as-excluded-2-light.png#gh-light-mode-only) ![Mark Directory as excluded 2](./.github/assets/mark-directory-as-excluded-2-dark.png#gh-dark-mode-only)
+> ![Mark Directory as excluded 1](./.github/assets/mark-directory-as-excluded-1-light.png#gh-light-mode-only)
+> ![Mark Directory as excluded 1](./.github/assets/mark-directory-as-excluded-1-dark.png#gh-dark-mode-only)
+> ![Mark Directory as excluded 2](./.github/assets/mark-directory-as-excluded-2-light.png#gh-light-mode-only)
+> ![Mark Directory as excluded 2](./.github/assets/mark-directory-as-excluded-2-dark.png#gh-dark-mode-only)
 >
 > Also, when using a remote interpreter, you should exclude the `.pixi` directory on the remote machine.
 > Instead, you should run `pixi install` on the remote machine and select the conda shim from there.
