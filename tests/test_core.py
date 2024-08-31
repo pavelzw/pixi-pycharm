@@ -47,7 +47,7 @@ def environ():
     return env
 
 
-@pytest.fixture()
+@pytest.fixture
 def libexec_conda(pixi_project):
     libexec = pixi_project / ".pixi" / "envs" / "default" / "libexec"
     Path.mkdir(libexec, parents=True, exist_ok=True)
