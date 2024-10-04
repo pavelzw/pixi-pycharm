@@ -11,15 +11,24 @@ import traceback
 from functools import lru_cache
 from pathlib import Path
 
+ON_WINDOWS = os.name == "nt"
 ENABLE_LOGGING = True
 
 # assuming __file__ is .pixi/envs/<env>/libexec/conda
 # or .pixi\envs\<env>\libexec\conda.bat\..\conda.py
 PIXI_ENVIRONMENT_FILE = Path(__file__).resolve().parent.parent / "conda-meta" / "pixi"
+DEFAULT_PIXI_EXECUTABLE_PATH = (
+    Path(Path.home()) / ".pixi" / "bin" / f"pixi{'.exe' if ON_WINDOWS else ''}"
+)
 
 
 def pixi(cmd):
-    out = subprocess.check_output(["pixi", *cmd])
+    try:
+        out = subprocess.check_output(["pixi", *cmd])
+    except FileNotFoundError:
+        # if pixi is not on PATH, try to run it from the default location
+        # see https://pixi.sh/install.sh or https://pixi.sh/install.ps1
+        out = subprocess.check_output([str(DEFAULT_PIXI_EXECUTABLE_PATH), *cmd])
     return out.decode(locale.getpreferredencoding())
 
 
