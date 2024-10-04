@@ -25,10 +25,14 @@ DEFAULT_PIXI_EXECUTABLE_PATH = (
 def pixi(cmd):
     try:
         out = subprocess.check_output(["pixi", *cmd])
-    except FileNotFoundError:
+    except FileNotFoundError as e:
         # if pixi is not on PATH, try to run it from the default location
         # see https://pixi.sh/install.sh or https://pixi.sh/install.ps1
-        out = subprocess.check_output([str(DEFAULT_PIXI_EXECUTABLE_PATH), *cmd])
+        try:
+            out = subprocess.check_output([str(DEFAULT_PIXI_EXECUTABLE_PATH), *cmd])
+        except FileNotFoundError:
+            msg = "pixi not found. Is it installed in your PATH?"
+            raise FileNotFoundError(msg) from e
     return out.decode(locale.getpreferredencoding())
 
 
