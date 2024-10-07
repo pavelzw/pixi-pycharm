@@ -3,6 +3,7 @@
 [![License][license-badge]][license]
 [![CI][ci-badge]][ci]
 [![Latest release][latest-release-badge]][releases]
+[![conda-forge](https://img.shields.io/conda/pn/conda-forge/pixi-pycharm?logoColor=white&logo=conda-forge&style=flat-square)](https://prefix.dev/channels/conda-forge/packages/pixi-pycharm)
 [![Project Chat][chat-badge]][chat-url]
 [![Pixi Badge][pixi-badge]][pixi]
 
