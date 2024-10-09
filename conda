@@ -117,14 +117,18 @@ def conda_run(args):
         pixi_run_args = [f'"{arg}"' for arg in args[3:] if arg != "--no-capture-output"]
     else:
         pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
-    os.execlp(
-        "pixi",
-        "pixi",
-        "run",
-        *std_pixi_args(),
-        *pixi_env_cli_params(env),
-        *pixi_run_args,
-    )
+
+    cmd = ["pixi", "run", *std_pixi_args(), *pixi_env_cli_params(env), *pixi_run_args]
+    try:
+        os.execlp("pixi", *cmd)
+    except FileNotFoundError as e:
+        # if pixi is not on PATH, try to run it from the default location
+        # see https://pixi.sh/install.sh or https://pixi.sh/install.ps1
+        try:
+            os.execlp(str(DEFAULT_PIXI_EXECUTABLE_PATH), *cmd)
+        except FileNotFoundError:
+            msg = "pixi not found. Is it installed in your PATH?"
+            raise FileNotFoundError(msg) from e
 
 
 def main(args):
