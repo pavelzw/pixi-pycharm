@@ -23,7 +23,7 @@ DEFAULT_PIXI_EXECUTABLE_PATH = (
 def pixi(cmd):
     try:
         if ON_WINDOWS:
-            out = subprocess.check_output(' '.join(["pixi", *cmd]))
+            out = subprocess.check_output(" ".join(["pixi", *cmd]))
         else:
             out = subprocess.check_output(["pixi", *cmd])
     except FileNotFoundError as e:
@@ -60,7 +60,7 @@ def pixi_root():
 
 
 def std_pixi_args():
-    return ["-q", "--no-progress", "--manifest-path", f"\"{manifest_path()}\""]
+    return ["-q", "--no-progress", "--manifest-path", f'"{manifest_path()}"']
 
 
 def pixi_json(cmd):

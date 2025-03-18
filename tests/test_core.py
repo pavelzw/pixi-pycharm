@@ -3,14 +3,19 @@ import locale
 import os
 import shutil
 import subprocess
-from pathlib import Path, PureWindowsPath
+from pathlib import Path
 
 import pytest
 
 
-@pytest.fixture(scope="module",
-                params=[{"folder": pfolder, "env_type": t} for t in ["attached", "detached"] for pfolder in
-                        ["pyproject_toml", "pixi_toml", "space folder"]])
+@pytest.fixture(
+    scope="module",
+    params=[
+        {"folder": pfolder, "env_type": t}
+        for t in ["attached", "detached"]
+        for pfolder in ["pyproject_toml", "pixi_toml", "space folder"]
+    ],
+)
 def pixi_project(tmp_path_factory, request):
     tmpdir = tmp_path_factory.mktemp(request.param["folder"])
     manifest_file = "pyproject.toml" if request.param["folder"] == "pyproject_toml" else "pixi.toml"
@@ -30,10 +35,10 @@ def pixi_project(tmp_path_factory, request):
 
         config = tmpdir / ".pixi" / "config.toml"
         # Single quotes needed to deal with Windows Path
-        config.write_text(f"detached-environments = \'{detach_dir}\'")
+        config.write_text(f"detached-environments = '{detach_dir}'")
 
     subprocess.run(
-        ["pixi", "install", "--locked", "--no-progress",], cwd=tmpdir, env=environ(), check=True
+        ["pixi", "install", "--locked", "--no-progress"], cwd=tmpdir, env=environ(), check=True
     )
 
     return tmpdir, request.param["env_type"]
@@ -117,8 +122,7 @@ def test_info_envs_json(libexec_conda, pixi_project):
     assert data["envs_dirs"] == [str(pixi_root / "envs")]
     assert data["conda_prefix"] == str(pixi_root / "envs")
     assert data["envs"] == [
-        str(pixi_root / "envs" / env)
-        for env in ["default", "py39", "py310", "py311", "py312"]
+        str(pixi_root / "envs" / env) for env in ["default", "py39", "py310", "py311", "py312"]
     ]
 
 
@@ -146,15 +150,15 @@ def test_run(libexec_conda, pixi_project, env: str, use_prefix: bool):
         pixi_root = next(pixi_root.iterdir())
     env_args = ["-p", str(pixi_root / "envs" / env)] if use_prefix else ["-n", env]
     assert (
-            run_conda(
-                libexec_conda,
-                "run",
-                *env_args,
-                "--no-capture-output",
-                "echo",
-                "42",
-            )
-            == "42"
+        run_conda(
+            libexec_conda,
+            "run",
+            *env_args,
+            "--no-capture-output",
+            "echo",
+            "42",
+        )
+        == "42"
     )
     assert run_conda(
         libexec_conda,
