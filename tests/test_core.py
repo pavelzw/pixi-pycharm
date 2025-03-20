@@ -92,9 +92,22 @@ def libexec_conda(pixi_project):
 
 
 def run_conda(libexec_conda, *args):
+    if os.name == "nt":
+        return (
+            subprocess.check_output(
+                [
+                    libexec_conda,
+                    *args,
+                ],
+                env=environ(),
+            )
+            .decode(locale.getpreferredencoding())
+            .rstrip()
+        )
     return (
         subprocess.check_output(
             [
+                "python",
                 libexec_conda,
                 *args,
             ],
@@ -172,18 +185,35 @@ def test_run(libexec_conda, pixi_project, env: str, use_prefix: bool):
 
 
 def test_not_implemented(libexec_conda, tmp_path):
-    def run_conda_fail_stderr(libexec_conda, *args):
-        proc = subprocess.run(
-            [
-                libexec_conda,
-                *args,
-            ],
-            env=environ(),
-            stderr=subprocess.PIPE,
-            check=False,
-        )
-        assert proc.returncode == 1
-        return proc.stderr.decode(locale.getpreferredencoding())
+    if os.name == "nt":
+
+        def run_conda_fail_stderr(libexec_conda, *args):
+            proc = subprocess.run(
+                [
+                    libexec_conda,
+                    *args,
+                ],
+                env=environ(),
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+            assert proc.returncode == 1
+            return proc.stderr.decode(locale.getpreferredencoding())
+    else:
+
+        def run_conda_fail_stderr(libexec_conda, *args):
+            proc = subprocess.run(
+                [
+                    "python",
+                    libexec_conda,
+                    *args,
+                ],
+                env=environ(),
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+            assert proc.returncode == 1
+            return proc.stderr.decode(locale.getpreferredencoding())
 
     assert "NotImplementedError" in run_conda_fail_stderr(
         libexec_conda, "create", "-p", str(tmp_path / "env")
