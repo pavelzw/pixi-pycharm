@@ -63,7 +63,9 @@ def pixi_root():
 
 
 def std_pixi_args():
-    return ["-q", "--no-progress", "--manifest-path", f'"{manifest_path()}"']
+    if ON_WINDOWS:
+        return ["-q", "--no-progress", "--manifest-path", f'"{manifest_path()}"']
+    return ["-q", "--no-progress", "--manifest-path", manifest_path()]
 
 
 def pixi_json(cmd):
