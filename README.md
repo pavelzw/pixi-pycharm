@@ -3,7 +3,8 @@
 [![License][license-badge]][license]
 [![CI][ci-badge]][ci]
 [![Latest release][latest-release-badge]][releases]
-[![conda-forge](https://img.shields.io/conda/pn/conda-forge/pixi-pycharm?logoColor=white&logo=conda-forge&style=flat-square)](https://prefix.dev/channels/conda-forge/packages/pixi-pycharm)
+[![conda-forge][conda-badge]][conda-url]
+[![Conda Downloads][conda-downloads-badge]][conda-url]
 [![Project Chat][chat-badge]][chat-url]
 [![Pixi Badge][pixi-badge]][pixi]
 
@@ -13,6 +14,9 @@
 [ci]: https://github.com/pavelzw/pixi-pycharm/actions/
 [latest-release-badge]: https://img.shields.io/github/v/tag/pavelzw/pixi-pycharm?style=flat-square&label=latest&sort=semver
 [releases]: https://github.com/pavelzw/pixi-pycharm/releases
+[conda-badge]: https://img.shields.io/conda/pn/conda-forge/pixi-pycharm?logoColor=white&logo=conda-forge&style=flat-square
+[conda-downloads-badge]: https://img.shields.io/conda/dn/conda-forge/pixi-pycharm?style=flat-square
+[conda-url]: https://prefix.dev/channels/conda-forge/packages/pixi-pycharm
 [chat-badge]: https://img.shields.io/discord/1082332781146800168.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2&style=flat-square
 [chat-url]: https://discord.gg/kKV8ZxyzY4
 [pixi-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/prefix-dev/pixi/main/assets/badge/v0.json&style=flat-square
