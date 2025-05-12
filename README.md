@@ -30,6 +30,11 @@ Add [pixi](https://github.com/prefix-dev/pixi) support to PyCharm.
 
 ## How to use
 
+> [!TIP]
+> There is a tracking issue for native Pixi support in PyCharm, [PY-79041](https://youtrack.jetbrains.com/issue/PY-79041).
+> Feel free to upvote it if it is relevant to you.
+> For CLion, you can track [CPP-42761](https://youtrack.jetbrains.com/issue/CPP-42761).
+
 To get started, add `pixi-pycharm` to your pixi project.
 
 ```bash
