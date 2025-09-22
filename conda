@@ -152,7 +152,7 @@ def main(args):
             )
             return 1
         print("Self-check successful.", file=sys.stderr)
-    elif args == ["info", "--envs", "--json"]:
+    elif args in (["info", "--envs", "--json"], ["env", "list", "--json"]):
         conda_info_envs_json()
     elif args[0] == "list":
         conda_list(args)
