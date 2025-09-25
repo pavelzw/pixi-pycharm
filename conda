@@ -153,6 +153,7 @@ def main(args):
             return 1
         print("Self-check successful.", file=sys.stderr)
     elif args in (["info", "--envs", "--json"], ["env", "list", "--json"]):
+        # `conda env list --json` (used in CLion 2025.3) returns the same as `conda info --envs --json`
         conda_info_envs_json()
     elif args[0] == "list":
         conda_list(args)
