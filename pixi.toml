@@ -1,6 +1,6 @@
 [project]
 name = "pixi-pycharm"
-version = "0.0.9"
+version = "0.0.10"
 description = "Conda shim for PyCharm that proxies pixi"
 authors = ["Pavel Zwerschke <pavelzw@gmail.com>"]
 channels = ["conda-forge"]
