@@ -20,6 +20,7 @@ PIXI_ENVIRONMENT_FILE = Path(__file__).resolve().parent.parent / "conda-meta" / 
 DEFAULT_PIXI_EXECUTABLE_PATH = (
     Path(Path.home()) / ".pixi" / "bin" / f"pixi{'.exe' if ON_WINDOWS else ''}"
 )
+PIXI_HOMEBREW_PATH = Path("/opt/homebrew/bin/pixi")
 
 
 def pixi(cmd):
@@ -28,9 +29,11 @@ def pixi(cmd):
     except FileNotFoundError as e:
         # if pixi is not on PATH, try to run it from the default location
         # see https://pixi.sh/install.sh or https://pixi.sh/install.ps1
-        try:
+        if PIXI_HOMEBREW_PATH.exists():
+            out = subprocess.check_output([str(PIXI_HOMEBREW_PATH), *cmd])
+        elif DEFAULT_PIXI_EXECUTABLE_PATH.exists():
             out = subprocess.check_output([str(DEFAULT_PIXI_EXECUTABLE_PATH), *cmd])
-        except FileNotFoundError:
+        else:
             msg = "pixi not found. Is it installed in your PATH?"
             raise FileNotFoundError(msg) from e
     return out.decode(locale.getpreferredencoding())
@@ -95,17 +98,39 @@ def conda_info_envs_json():
 
 
 def conda_list(args):
-    assert args[1] == "-p" or args[1] == "-n"
-    env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
-    assert len(args) == 3 or len(args) == 4  # noqa: PLR2004
-    out = pixi_json(["list", *std_pixi_args(), *pixi_env_cli_params(env)])
-    if len(args) == 3:  # noqa: PLR2004
-        lines = ("{name} {version} {build}".format(**pkg) for pkg in out)
+    assert args[1] == "-p" or args[1] == "-n" or args[1] == "--json"
+    if args[1] == "--json":
+        # >= 2025.3
+        assert args[2] == "-n" or args[2] == "-p"
+        env = prefix_to_env(args[3]) if args[2] == "-p" else args[3]
+
+        assert len(args) == 4  # noqa: PLR2004
+        out = pixi_json(["list", *std_pixi_args(), *pixi_env_cli_params(env)])
+
+        out_transformed = [
+            {
+                # in the case of PyPi dependencies, some of the fields can be none
+                "name": str(x.get("name")),
+                "version": str(x.get("version")),
+                "build_string": str(x.get("build")),
+                "base_url": str(x.get("source")),
+            }
+            for x in out
+        ]
+
+        print(json.dumps(out_transformed))
     else:
-        # observed in PyCharm 2024.1 for Windows
-        assert args[3] == "-e"
-        lines = ("{name}={version}={build}".format(**pkg) for pkg in out)
-    print("\n".join(lines))
+        # < 2025.3
+        env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
+        assert len(args) == 3 or len(args) == 4  # noqa: PLR2004
+        out = pixi_json(["list", *std_pixi_args(), *pixi_env_cli_params(env)])
+        if len(args) == 3:  # noqa: PLR2004
+            lines = ("{name} {version} {build}".format(**pkg) for pkg in out)
+        else:
+            # observed in PyCharm 2024.1 for Windows
+            assert args[3] == "-e"
+            lines = ("{name}={version}={build}".format(**pkg) for pkg in out)
+        print("\n".join(lines))
 
 
 def conda_run(args):
@@ -131,7 +156,13 @@ def conda_run(args):
             raise FileNotFoundError(msg) from e
 
 
-def main(args):
+def conda_update(args):
+    assert args[1:4] == ["--dry-run", "--all", "--json"]
+    assert args[4] == "-n" or args[4] == "-p"
+    print('{"success": true, "message": "All requested packages already installed."}')
+
+
+def main(args):  # noqa: C901
     if args == ["self-check"]:
         try:
             pixi(["--version"])
@@ -160,6 +191,10 @@ def main(args):
         conda_list(args)
     elif args[0] == "run":
         conda_run(args)
+    elif args[0] == "--version":
+        print("conda 25.9.1")
+    elif args[0] == "update":
+        conda_update(args)
     elif args[0] == "activate":
         msg = f"{args!s}\n`conda activate` not implemented. PyCharm will fallback to `conda run`."
         raise NotImplementedError(msg)
