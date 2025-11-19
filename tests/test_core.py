@@ -131,7 +131,7 @@ def test_run(libexec_conda, pixi_project, env: str, use_prefix: bool):
         "python",
         "-c",
         "import sys; print(sys.executable)",
-    ).endswith(f"python{'.EXE' if os.name == 'nt' else ''}")
+    ).endswith(f"python{'.exe' if os.name == 'nt' else ''}")
 
 
 def test_not_implemented(libexec_conda, tmp_path):
