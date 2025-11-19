@@ -99,6 +99,22 @@ def test_info_envs_json(libexec_conda, pixi_project):
     ]
 
 
+def test_version(libexec_conda):
+    run_conda(libexec_conda, "--version")
+
+
+def test_list_json(libexec_conda):
+    result = run_conda(libexec_conda, "list", "-n", "default")
+    assert isinstance(result, str)
+    assert json.loads(result)
+
+
+def test_update_dry_run(libexec_conda):
+    result = run_conda(libexec_conda, "update", "--dry-run", "--all", "--json")
+    assert isinstance(result, str)
+    assert json.loads(result)
+
+
 @pytest.mark.parametrize("env", ["default", "py39", "py310", "py311", "py312"])
 @pytest.mark.parametrize("use_prefix", [True, False])
 @pytest.mark.parametrize("use_export_format", [True, False])
