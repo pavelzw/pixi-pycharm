@@ -159,11 +159,10 @@ def conda_run(args):
 def conda_update(args):
     assert args[1:4] == ["--dry-run", "--all", "--json"]
     assert args[4] == "-n" or args[4] == "-p"
-    env = args[4] if args[4] == "-n" else prefix_to_env(args[4])
     print('{"success": true, "message": "All requested packages already installed."}')
 
 
-def main(args):
+def main(args):  # noqa: C901
     if args == ["self-check"]:
         try:
             pixi(["--version"])

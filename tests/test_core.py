@@ -104,13 +104,13 @@ def test_version(libexec_conda):
 
 
 def test_list_json(libexec_conda):
-    result = run_conda(libexec_conda, "list", "-n", "default")
+    result = run_conda(libexec_conda, "list", "--json", "-n", "default")
     assert isinstance(result, str)
     assert json.loads(result)
 
 
 def test_update_dry_run(libexec_conda):
-    result = run_conda(libexec_conda, "update", "--dry-run", "--all", "--json")
+    result = run_conda(libexec_conda, "update", "--dry-run", "--all", "--json", "-n", "default")
     assert isinstance(result, str)
     assert json.loads(result)
 
