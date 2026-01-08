@@ -29,3 +29,7 @@ Platform: TODO
 ```
 Paste the contents of ~/.cache/pixi-pycharm.log here
 ```
+
+## Process Output
+
+Please provide a screenshot of the PyCharm [Python Process Output](https://www.jetbrains.com/help/pycharm/process-output-tool-window.html) Window.
