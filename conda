@@ -134,14 +134,19 @@ def conda_list(args):
 
 
 def conda_run(args):
-    assert args[1] == "-p" or args[1] == "-n"
-    env = prefix_to_env(args[2]) if args[1] == "-p" else args[2]
+    # Filter out --no-capture-output from args as it can appear at different positions
+    # PyCharm might send: run --no-capture-output -n env python ...
+    # or: run -n env --no-capture-output python ...
+    filtered_args = [arg for arg in args if arg != "--no-capture-output"]
+
+    assert filtered_args[1] == "-p" or filtered_args[1] == "-n"
+    env = prefix_to_env(filtered_args[2]) if filtered_args[1] == "-p" else filtered_args[2]
 
     if os.name == "nt":
         # https://bugs.python.org/issue20451
-        pixi_run_args = [f'"{arg}"' for arg in args[3:] if arg != "--no-capture-output"]
+        pixi_run_args = [f'"{arg}"' for arg in filtered_args[3:]]
     else:
-        pixi_run_args = [arg for arg in args[3:] if arg != "--no-capture-output"]
+        pixi_run_args = filtered_args[3:]
 
     cmd = ["pixi", "run", *std_pixi_args(), *pixi_env_cli_params(env), *pixi_run_args]
     try:
