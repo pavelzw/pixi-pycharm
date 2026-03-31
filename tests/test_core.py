@@ -150,6 +150,39 @@ def test_run(libexec_conda, pixi_project, env: str, use_prefix: bool):
     ).endswith(f"python{'.exe' if os.name == 'nt' else ''}")
 
 
+@pytest.mark.parametrize("env", ["default", "py39", "py310", "py311", "py312"])
+@pytest.mark.parametrize("use_prefix", [True, False])
+def test_run_no_capture_output_before_env(libexec_conda, pixi_project, env: str, use_prefix: bool):
+    """Test that --no-capture-output can appear before environment args.
+
+    This tests the issue reported where PyCharm sends:
+    conda run --no-capture-output -n default python -c "..."
+    instead of:
+    conda run -n default --no-capture-output python -c "..."
+    """
+    env_args = ["-p", str(pixi_project / ".pixi" / "envs" / env)] if use_prefix else ["-n", env]
+    assert (
+        run_conda(
+            libexec_conda,
+            "run",
+            "--no-capture-output",
+            *env_args,
+            "echo",
+            "42",
+        )
+        == "42"
+    )
+    assert run_conda(
+        libexec_conda,
+        "run",
+        "--no-capture-output",
+        *env_args,
+        "python",
+        "-c",
+        "import sys; print(sys.executable)",
+    ).endswith(f"python{'.exe' if os.name == 'nt' else ''}")
+
+
 def test_not_implemented(libexec_conda, tmp_path):
     def run_conda_fail_stderr(libexec_conda, *args):
         proc = subprocess.run(
