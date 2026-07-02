@@ -70,10 +70,22 @@ def pixi_json(cmd):
 
 
 def pixi_envs():
-    platform = pixi_json(["info", *std_pixi_args()])["platform"]
-    envs = pixi_json(["info", *std_pixi_args()])["environments_info"]
-    return [env["prefix"] for env in envs if platform in env["platforms"]]
+    info = pixi_json(["info", *std_pixi_args()])
+    platform = info["platform"]
+    envs = info["environments_info"]
+    return [
+        env["prefix"]
+        for env in envs
+        if platform in {pixi_platform_name(p) for p in env["platforms"]}
+    ]
 
+
+def pixi_platform_name(platform):
+    if isinstance(platform, str):
+        return platform
+    if isinstance(platform, dict):
+        return platform.get("name") or platform.get("subdir")
+    return None
 
 def print_json(data):
     print(json.dumps(data, indent=4))
