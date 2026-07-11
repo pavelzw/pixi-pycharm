@@ -20,19 +20,36 @@ PIXI_ENVIRONMENT_FILE = Path(__file__).resolve().parent.parent / "conda-meta" / 
 DEFAULT_PIXI_EXECUTABLE_PATH = (
     Path(Path.home()) / ".pixi" / "bin" / f"pixi{'.exe' if ON_WINDOWS else ''}"
 )
-PIXI_HOMEBREW_PATH = Path("/opt/homebrew/bin/pixi")
+# Common install paths for pixi
+# - Apple Silicon: /opt/homebrew/bin
+# - Intel macOS:   /usr/local/bin
+# - Linuxbrew:     /home/linuxbrew/.linuxbrew/bin
+PIXI_PATHS = [
+    Path("/opt/homebrew/bin/pixi"),
+    Path("/usr/local/bin/pixi"),
+    Path("/home/linuxbrew/.linuxbrew/bin/pixi"),
+]
+
+
+def find_pixi_executable():
+    """Return the path to a pixi executable if not on PATH, else None."""
+    for path in PIXI_PATHS:
+        if path.exists():
+            return str(path)
+    if DEFAULT_PIXI_EXECUTABLE_PATH.exists():
+        return str(DEFAULT_PIXI_EXECUTABLE_PATH)
+    return None
 
 
 def pixi(cmd):
     try:
         out = subprocess.check_output(["pixi", *cmd])
     except FileNotFoundError as e:
-        # if pixi is not on PATH, try to run it from the default location
+        # if pixi is not on PATH, try known install locations
         # see https://pixi.sh/install.sh or https://pixi.sh/install.ps1
-        if PIXI_HOMEBREW_PATH.exists():
-            out = subprocess.check_output([str(PIXI_HOMEBREW_PATH), *cmd])
-        elif DEFAULT_PIXI_EXECUTABLE_PATH.exists():
-            out = subprocess.check_output([str(DEFAULT_PIXI_EXECUTABLE_PATH), *cmd])
+        pixi_exe = find_pixi_executable()
+        if pixi_exe:
+            out = subprocess.check_output([pixi_exe, *cmd])
         else:
             msg = "pixi not found. Is it installed in your PATH?"
             raise FileNotFoundError(msg) from e
@@ -72,7 +89,12 @@ def pixi_json(cmd):
 def pixi_envs():
     platform = pixi_json(["info", *std_pixi_args()])["platform"]
     envs = pixi_json(["info", *std_pixi_args()])["environments_info"]
-    return [env["prefix"] for env in envs if platform in env["platforms"]]
+    result = []
+    for env in envs:
+        subdirs = [p if isinstance(p, str) else p["subdir"] for p in env["platforms"]]
+        if platform in subdirs:
+            result.append(env["prefix"])
+    return result
 
 
 def print_json(data):
@@ -152,13 +174,13 @@ def conda_run(args):
     try:
         os.execlp("pixi", *cmd)
     except FileNotFoundError as e:
-        # if pixi is not on PATH, try to run it from the default location
+        # if pixi is not on PATH, try known install locations
         # see https://pixi.sh/install.sh or https://pixi.sh/install.ps1
-        try:
-            os.execlp(str(DEFAULT_PIXI_EXECUTABLE_PATH), *cmd)
-        except FileNotFoundError:
-            msg = "pixi not found. Is it installed in your PATH?"
-            raise FileNotFoundError(msg) from e
+        pixi_exe = find_pixi_executable()
+        if pixi_exe:
+            os.execlp(pixi_exe, pixi_exe, *cmd[1:])
+        msg = "pixi not found. Is it installed in your PATH?"
+        raise FileNotFoundError(msg) from e
 
 
 def conda_update(args):
