@@ -20,7 +20,7 @@ PIXI_ENVIRONMENT_FILE = Path(__file__).resolve().parent.parent / "conda-meta" / 
 DEFAULT_PIXI_EXECUTABLE_PATH = (
     Path(Path.home()) / ".pixi" / "bin" / f"pixi{'.exe' if ON_WINDOWS else ''}"
 )
-# Homebrew install prefixes for pixi:
+# Common install paths for pixi
 # - Apple Silicon: /opt/homebrew/bin
 # - Intel macOS:   /usr/local/bin
 # - Linuxbrew:     /home/linuxbrew/.linuxbrew/bin
