@@ -17,6 +17,7 @@ ENABLE_LOGGING = True
 # assuming __file__ is .pixi/envs/<env>/libexec/conda
 # or .pixi\envs\<env>\libexec\conda.bat\..\conda.py
 PIXI_ENVIRONMENT_FILE = Path(__file__).resolve().parent.parent / "conda-meta" / "pixi"
+PIXI_ENVS_DIR = Path(__file__).resolve().parent.parent.parent
 DEFAULT_PIXI_EXECUTABLE_PATH = (
     Path(Path.home()) / ".pixi" / "bin" / f"pixi{'.exe' if ON_WINDOWS else ''}"
 )
@@ -25,7 +26,10 @@ PIXI_HOMEBREW_PATH = Path("/opt/homebrew/bin/pixi")
 
 def pixi(cmd):
     try:
-        out = subprocess.check_output(["pixi", *cmd])
+        if ON_WINDOWS:
+            out = subprocess.check_output(" ".join(["pixi", *cmd]))
+        else:
+            out = subprocess.check_output(["pixi", *cmd])
     except FileNotFoundError as e:
         # if pixi is not on PATH, try to run it from the default location
         # see https://pixi.sh/install.sh or https://pixi.sh/install.ps1
@@ -62,7 +66,9 @@ def pixi_root():
 
 
 def std_pixi_args():
-    return ["-q", "--no-progress", "--manifest-path", str(manifest_path())]
+    if ON_WINDOWS:
+        return ["-q", "--no-progress", "--manifest-path", f'"{manifest_path()}"']
+    return ["-q", "--no-progress", "--manifest-path", manifest_path()]
 
 
 def pixi_json(cmd):
@@ -90,8 +96,8 @@ def pixi_env_cli_params(env):
 def conda_info_envs_json():
     print_json(
         {
-            "envs_dirs": [str(pixi_root() / "envs")],
-            "conda_prefix": str(pixi_root() / "envs"),
+            "envs_dirs": [str(PIXI_ENVS_DIR)],
+            "conda_prefix": str(PIXI_ENVS_DIR),
             "envs": pixi_envs(),
         },
     )
