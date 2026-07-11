@@ -24,7 +24,7 @@ DEFAULT_PIXI_EXECUTABLE_PATH = (
 # - Apple Silicon: /opt/homebrew/bin
 # - Intel macOS:   /usr/local/bin
 # - Linuxbrew:     /home/linuxbrew/.linuxbrew/bin
-PIXI_HOMEBREW_PATHS = [
+PIXI_PATHS = [
     Path("/opt/homebrew/bin/pixi"),
     Path("/usr/local/bin/pixi"),
     Path("/home/linuxbrew/.linuxbrew/bin/pixi"),
@@ -33,7 +33,7 @@ PIXI_HOMEBREW_PATHS = [
 
 def find_pixi_executable():
     """Return the path to a pixi executable if not on PATH, else None."""
-    for path in PIXI_HOMEBREW_PATHS:
+    for path in PIXI_PATHS:
         if path.exists():
             return str(path)
     if DEFAULT_PIXI_EXECUTABLE_PATH.exists():
@@ -91,8 +91,8 @@ def pixi_envs():
     envs = pixi_json(["info", *std_pixi_args()])["environments_info"]
     result = []
     for env in envs:
-        names = [p if isinstance(p, str) else p["name"] for p in env["platforms"]]
-        if platform in names:
+        subdirs = [p if isinstance(p, str) else p["subdir"] for p in env["platforms"]]
+        if platform in subdirs:
             result.append(env["prefix"])
     return result
 
