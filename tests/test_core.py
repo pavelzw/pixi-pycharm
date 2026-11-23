@@ -99,6 +99,15 @@ def test_info_envs_json(libexec_conda, pixi_project):
     ]
 
 
+def test_env_list(libexec_conda, pixi_project):
+    result = run_conda(libexec_conda, "env", "list")
+    rows = [line.split() for line in result.splitlines() if not line.startswith("#")]
+    assert rows == [
+        [env, str(pixi_project / ".pixi" / "envs" / env)]
+        for env in ["default", "py39", "py310", "py311", "py312"]
+    ]
+
+
 def test_version(libexec_conda):
     run_conda(libexec_conda, "--version")
 

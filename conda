@@ -119,6 +119,13 @@ def conda_info_envs_json():
     )
 
 
+def conda_env_list():
+    # plain-text `conda env list` format, used by PyCharm 2026.3's interpreter widget
+    print("# conda environments:\n#")
+    for prefix in pixi_envs():
+        print(f"{prefix_to_env(prefix):<25} {prefix}")
+
+
 def conda_list(args):
     assert args[1] == "-p" or args[1] == "-n" or args[1] == "--json"
     if args[1] == "--json":
@@ -214,6 +221,8 @@ def main(args):  # noqa: C901
         # `conda env list --json` (used in CLion 2025.3) returns
         # the same as `conda info --envs --json`
         conda_info_envs_json()
+    elif args == ["env", "list"]:
+        conda_env_list()
     elif args[0] == "list":
         conda_list(args)
     elif args[0] == "run":
