@@ -221,6 +221,7 @@ def main(args):  # noqa: C901
         # the same as `conda info --envs --json`
         conda_info_envs_json()
     elif args == ["env", "list"]:
+        # plain `conda env list` (used in PyCharm 2026.3's interpreter widget)
         conda_env_list()
     elif args[0] == "list":
         conda_list(args)
