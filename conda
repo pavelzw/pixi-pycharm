@@ -120,7 +120,6 @@ def conda_info_envs_json():
 
 
 def conda_env_list():
-    # plain-text `conda env list` format, used by PyCharm 2026.3's interpreter widget
     print("# conda environments:\n#")
     for prefix in pixi_envs():
         print(f"{prefix_to_env(prefix):<25} {prefix}")
